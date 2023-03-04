@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+  namespace: services
+  labels:
+    app: admin
+  annotations:
+    container.apparmor.security.beta.kubernetes.io/nginx: localhost/service
+spec:
+  selector:
+    matchLabels:
+      app: admin
+  template:
+    metadata:
+      labels:
+        app: admin
+    spec:
+      initContainers:
+        - name: init-service
+          image: busybox:1.28
+          command: [
+            'sh',
+            '-c',
+            "nslookup postgres.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; echo waiting for postgres"
+          ]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 70
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: Localhost
+              localhostProfile: operator/services/secured-profile.json
+      containers:
+        - image: postgres
+          name: postgres
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 70
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: Localhost
+              localhostProfile: operator/services/secured-profile.json
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: admin-config
+            - secretRef:
+                name: admin-secret
+        - image: admin
+          name: admin
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 4201
+            runAsGroup: 4200
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: Localhost
+              localhostProfile: operator/services/secured-profile.json
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: admin-config
+            - secretRef:
+                name: admin-secret

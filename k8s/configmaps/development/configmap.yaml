@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: admin-config
+  namespace: services
+data:
+  NODE_OPTIONS: "'--enable-source-maps'"
+  NODE_ENV: development

@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: services
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres
+        livenessProbe:
+          exec:
+            command:
+              - pg_isready
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+              - pg_isready
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 70
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          seccompProfile:
+            type: Localhost
+            localhostProfile: operator/services/secured-profile.json
+        ports:
+          - containerPort: 5432
+        volumeMounts:
+          - mountPath: "/var/lib/postgresql"
+            name: postgres-pv-data-complete
+          - mountPath: "/dumps"
+            name: postgres-pv-dump-complete
+        envFrom:
+          - configMapRef:
+              name: admin-config
+          - secretRef:
+              name: admin-secret
+      volumes:
+        - name: postgres-pv-data-complete
+          persistentVolumeClaim:
+            claimName: postgres-pvc-data-complete
+        - name: postgres-pv-dump-complete
+          persistentVolumeClaim:
+            claimName: postgres-pvc-dump-complete

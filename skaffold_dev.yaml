@@ -1,0 +1,51 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: admin
+build:
+  artifacts:
+    - image: postgres
+      context: k8s/db/psql/development/
+    - image: migration
+      context: k8s/db/psql/development/migration_commands
+    - image: admin
+      context: services/admin
+      docker:
+        target: development
+        dockerfile: Dockerfile
+    - image: migration-commands
+      context: k8s/db/psql/development/migration_commands
+    - image: migration-comments
+      context: k8s/db/psql/development/migration_comments
+    - image: migration-content
+      context: k8s/db/psql/development/migration_content
+    - image: migration-metadata
+      context: k8s/db/psql/development/migration_metadata
+    - image: migration-notifications
+      context: k8s/db/psql/development/migration_notifications
+    - image: migration-users
+      context: k8s/db/psql/development/migration_users
+      sync:
+        manual:
+          - src: "src/**/*"
+            dest: "/app"
+deploy:
+  # Default is minikube
+  #  kubeContext: kind-kind
+  # kubeContext: k3d-local
+  kubectl:
+    manifests:
+      - k8s/namespaces/services-ns.yaml
+      - k8s/configmaps/development/configmap.yaml
+      - k8s/secrets/development/secret.yaml
+      - k8s/storage/psql/pv-data-complete.yaml
+      - k8s/storage/psql/pv-dump-complete.yaml
+      - k8s/storage/psql/pvc-data-complete.yaml
+      - k8s/storage/psql/pvc-dump-complete.yaml
+      - k8s/db/psql/development/deployment.yaml
+      - k8s/db/psql/development/service.yaml
+      - k8s/services/admin/deployment.yaml
+      - k8s/services/admin/service.yaml
+      - k8s/services/notifications/deployment.yaml
+      - k8s/services/notifications/service.yaml
+      - k8s/ingress/develop/ingress.yml
