@@ -45,8 +45,6 @@ spec:
         volumeMounts:
           - mountPath: "/var/lib/postgresql"
             name: postgres-pv-data-complete
-          - mountPath: "/dumps"
-            name: postgres-pv-dump-complete
         envFrom:
           - configMapRef:
               name: admin-config
@@ -56,6 +54,3 @@ spec:
         - name: postgres-pv-data-complete
           persistentVolumeClaim:
             claimName: postgres-pvc-data-complete
-        - name: postgres-pv-dump-complete
-          persistentVolumeClaim:
-            claimName: postgres-pvc-dump-complete
