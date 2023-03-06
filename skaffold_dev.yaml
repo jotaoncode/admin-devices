@@ -8,6 +8,10 @@ build:
       context: k8s/db/psql/development/
     - image: admin
       context: services/admin/
+      sync:
+        manual:
+          - src: "main/**/*"
+            dest: "/app"
 deploy:
   # Default is minikube
   #  kubeContext: kind-kind
@@ -26,4 +30,4 @@ deploy:
       - k8s/services/admin/service.yaml
 #      - k8s/services/notifications/deployment.yaml
 #      - k8s/services/notifications/service.yaml
-#      - k8s/ingress/develop/ingress.yml
+      - k8s/ingress/develop/ingress.yml
