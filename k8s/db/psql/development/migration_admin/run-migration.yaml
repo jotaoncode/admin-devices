@@ -1,25 +1,19 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: admin
+  name: migration-admin
   namespace: services
-  labels:
-    app: admin
-  annotations:
-    container.apparmor.security.beta.kubernetes.io/nginx: localhost/service
 spec:
-  selector:
-    matchLabels:
-      app: admin
   template:
-    metadata:
-      labels:
-        app: admin
     spec:
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: admin-secret
       initContainers:
         - image: postgres
-          name: initialize
-          command: [ 'sh', '-c', 'sleep 10; pg_isready -h $POSTGRES_SERVICE_HOST -p $POSTGRES_SERVICE_PORT -d admin; sleep 10;' ]
+          name: postgres
+          command: ['sh', '-c', 'sleep 10; pg_isready -h $POSTGRES_SERVICE_HOST -p $POSTGRES_SERVICE_PORT -d admin; sleep 10;']
           securityContext:
             runAsNonRoot: true
             runAsUser: 70
@@ -38,12 +32,12 @@ spec:
             - secretRef:
                 name: admin-secret
       containers:
-        - image: admin
-          name: admin
+        - name: migration-admin
+          image: migration-admin
+          imagePullPolicy: Never
           securityContext:
             runAsNonRoot: true
-            runAsUser: 4201
-            runAsGroup: 4200
+            runAsUser: 70
             allowPrivilegeEscalation: false
             capabilities:
               drop:
@@ -51,10 +45,15 @@ spec:
             seccompProfile:
               type: Localhost
               localhostProfile: operator/services/secured-profile.json
-          ports:
-            - containerPort: 80
+          volumeMounts:
+            - name: secret-volume
+              readOnly: true
+              mountPath: "/etc/secret"
+          command: ["./run_migration.sh"]
           envFrom:
             - configMapRef:
                 name: admin-config
             - secretRef:
                 name: admin-secret
+      restartPolicy: Never
+  backoffLimit: 4
