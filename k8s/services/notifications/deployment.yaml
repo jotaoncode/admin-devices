@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notifications
+  namespace: services
+  labels:
+    app: notifications
+  annotations:
+    container.apparmor.security.beta.kubernetes.io/nginx: localhost/service
+spec:
+  selector:
+    matchLabels:
+      app: notifications
+  template:
+    metadata:
+      labels:
+        app: notifications
+    spec:
+      containers:
+        - image: notifications
+          name: notifications
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 4201
+            runAsGroup: 4200
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: Localhost
+              localhostProfile: operator/services/secured-profile.json
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: admin-config
+            - secretRef:
+                name: admin-secret

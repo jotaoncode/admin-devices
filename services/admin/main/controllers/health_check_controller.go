@@ -10,6 +10,7 @@ import (
 // @Success      200
 // @Router       /healthy [get]
 func IsHealthy(c *gin.Context) {
+	// TODO add DB connection state into consideration
 	c.JSON(http.StatusOK, gin.H{
 		"message": "is healthy",
 	})

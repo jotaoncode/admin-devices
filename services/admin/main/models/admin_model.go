@@ -1,21 +1,24 @@
 package models
 
 import (
+	"github.com/google/uuid"
 	"github.com/jotaoncode/greenbone/main/connectors"
 )
 
-func GetUserDevices(userId string) ([]UserDevice, error) {
+type AdminModel struct{}
+
+func (adminModel AdminModel) GetUserDevices(userId string) ([]UserDevice, error) {
 	var userDevices []UserDevices
-	connectors.GetDb().Find(&userDevices, "user_id = ?", userId)
+	connectors.DB{}.GetDb().Find(&userDevices, "user_id = ?", userId)
 	var deviceIds []string
 
 	for i := 0; i < len(userDevices); i++ {
 		deviceIds = append(deviceIds, userDevices[i].DeviceId)
 	}
 	var devices []Devices
-	connectors.GetDb().Find(&devices, "id IN ?", deviceIds)
+	connectors.DB{}.GetDb().Find(&devices, "id IN ?", deviceIds)
 	var user Users
-	connectors.GetDb().First(&user, "id = ?", userId)
+	connectors.DB{}.GetDb().First(&user, "id = ?", userId)
 	//fmt.Printf("%+v\n", usersAssigned)
 	var assignedUserDevices []UserDevice
 	for i := range deviceIds {
@@ -33,50 +36,69 @@ func GetUserDevices(userId string) ([]UserDevice, error) {
 		}
 		assignedUserDevices = append(assignedUserDevices, userDevice)
 	}
+
 	return assignedUserDevices, nil
 }
 
-func CreateDevice(device Devices) (string, error) {
-	deviceCreated := connectors.GetDb().Create(&device)
+func (adminModel AdminModel) CreateDevice(deviceCreationRequest CreateDeviceRequest) (string, error) {
+	var device = &Devices{
+		ID:          uuid.New().String(),
+		Name:        deviceCreationRequest.Name,
+		MAC:         deviceCreationRequest.MAC,
+		Description: deviceCreationRequest.Description,
+		IP:          deviceCreationRequest.IP,
+	}
+	deviceCreated := connectors.DB{}.GetDb().Create(&device)
 
 	return device.ID, deviceCreated.Error
 }
 
-func GetDevice(deviceId string) (Devices, error) {
+func (adminModel AdminModel) GetDevice(deviceId string) (Devices, error) {
 	var device Devices
-	queryResult := connectors.GetDb().First(&device, deviceId)
+	queryResult := connectors.DB{}.GetDb().First(&device, deviceId)
+
 	return device, queryResult.Error
 }
 
-func GetDevices() (Devices, error) {
+func (adminModel AdminModel) GetDevices() (Devices, error) {
 	var devices Devices
-	queryResult := connectors.GetDb().Find(&devices)
+	queryResult := connectors.DB{}.GetDb().Find(&devices)
+
 	return devices, queryResult.Error
 }
 
-func CreateUser(user Users) (string, error) {
-	queryResult := connectors.GetDb().Create(user)
+func (adminModel AdminModel) CreateUser(userCreationRequest CreateUserRequest) (string, error) {
+	// TODO from name to abbr
+	var user = &Users{ID: uuid.New().String(), Name: userCreationRequest.Name, Abbr: "MMU"}
+	queryResult := connectors.DB{}.GetDb().Create(&user)
+
 	return user.ID, queryResult.Error
 }
 
-func DeleteUser(userId string) (string, error) {
-	queryResult := connectors.GetDb().Delete(&Users{}, userId)
+func (adminModel AdminModel) DeleteUser(userId string) (string, error) {
+	queryResult := connectors.DB{}.GetDb().Delete(&Users{}, userId)
+
 	return userId, queryResult.Error
 }
 
-func AssignUserDevice(userId string, deviceId string) (string, error) {
-	var userDevice = UserDevices{UserId: userId, DeviceId: deviceId}
-	queryResult := connectors.GetDb().Create(&userDevice)
+func (adminModel AdminModel) AssignUserDevice(userId string, deviceId string) (string, error) {
+	var userDevice = UserDevices{ID: uuid.New().String(), UserId: userId, DeviceId: deviceId}
+	queryResult := connectors.DB{}.GetDb().Create(&userDevice)
 	var userAssignedDevices []UserDevices
-	connectors.GetDb().Find(userAssignedDevices, "user_id", userId)
+	connectors.DB{}.GetDb().Find(&userAssignedDevices, "user_id", userId)
 	if len(userAssignedDevices) > 2 {
-		println("Inform about it")
+		var user Users
+		connectors.DB{}.GetDb().First(&user, "id = ?", userId)
+		_, err := connectors.NotifyExcessOfDevices(user.Abbr, "warning")
+		if err != nil {
+			return userDevice.ID, err
+		}
 	}
 	return userDevice.ID, queryResult.Error
 }
 
-func DeassignDeviceToUser(userId string, deviceId string) (string, error) {
+func (adminModel AdminModel) DeassignDeviceToUser(userId string, deviceId string) (string, error) {
 	var userDevice = UserDevices{UserId: userId, DeviceId: deviceId}
-	queryResult := connectors.GetDb().Delete(&userDevice)
+	queryResult := connectors.DB{}.GetDb().Delete(&userDevice)
 	return userDevice.ID, queryResult.Error
 }

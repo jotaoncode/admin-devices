@@ -8,7 +8,9 @@ import (
 
 var db *gorm.DB
 
-func GetDb() *gorm.DB {
+type DB struct{}
+
+func (dbConnection DB) GetDb() *gorm.DB {
 	if db == nil {
 		var host = os.Getenv("POSTGRES_SERVICE_HOST")
 		dsn := "host=" + host + " user=postgres password=12345 dbname=admin port=5432 sslmode=disable"

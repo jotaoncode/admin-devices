@@ -8,6 +8,8 @@ build:
       context: k8s/db/psql/development/
     - image: migration-admin
       context: k8s/db/psql/development/migration_admin
+    - image: notifications
+      context: services/notifications/
     - image: admin
       context: services/admin/
       sync:
@@ -31,6 +33,6 @@ deploy:
       - k8s/db/psql/development/migration_admin/run-migration.yaml
       - k8s/services/admin/deployment.yaml
       - k8s/services/admin/service.yaml
-#      - k8s/services/notifications/deployment.yaml
-#      - k8s/services/notifications/service.yaml
+      - k8s/services/notifications/deployment.yaml
+      - k8s/services/notifications/service.yaml
       - k8s/ingress/develop/ingress.yml

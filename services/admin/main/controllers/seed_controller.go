@@ -41,5 +41,7 @@ func CreateSeed(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"assignedUserOnce":     assignedUserOnce,
 		"assignedUserTwoTimes": assignedUserTwoTimes,
+		"deviceAssignedOnce":   assignTwoTimes1,
+		"deviceAssignedTwice":  assignTwoTimes2,
 	})
 }

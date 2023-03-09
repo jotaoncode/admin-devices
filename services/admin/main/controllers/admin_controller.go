@@ -19,7 +19,7 @@ import (
 //
 // @Router       /device/:deviceId [get]
 func GetDevice(c *gin.Context) {
-	var device, err = models.GetDevice(c.Param("deviceId"))
+	var device, err = models.AdminModel{}.GetDevice(c.Param("deviceId"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err,
@@ -27,7 +27,7 @@ func GetDevice(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"devices": device,
+		"device": device,
 	})
 }
 
@@ -43,7 +43,7 @@ func GetDevice(c *gin.Context) {
 //
 // @Router       /devices [get]
 func GetDevices(c *gin.Context) {
-	var devices, err = models.GetDevices()
+	var devices, err = models.AdminModel{}.GetDevices()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err,
@@ -67,9 +67,9 @@ func GetDevices(c *gin.Context) {
 //
 // @Router       /device [post]
 func CreateDevice(c *gin.Context) {
-	var device models.Devices
-	c.BindJSON(&device)
-	var deviceId, err = models.CreateDevice(device)
+	var deviceCreationRequest models.CreateDeviceRequest
+	c.BindJSON(&deviceCreationRequest)
+	var deviceId, err = models.AdminModel{}.CreateDevice(deviceCreationRequest)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -89,14 +89,14 @@ func CreateDevice(c *gin.Context) {
 //
 // @Router       /user [post]
 func CreateUser(c *gin.Context) {
-	var user models.Users
+	var user models.CreateUserRequest
 	c.BindJSON(&user)
-	var userId, err = models.CreateUser(user)
+	var userId, err = models.AdminModel{}.CreateUser(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"deviceId": userId})
+	c.JSON(http.StatusOK, gin.H{"userId": userId})
 }
 
 // DeleteUser godoc
@@ -112,7 +112,7 @@ func CreateUser(c *gin.Context) {
 // @Router       /user/:userId [delete]
 func DeleteUser(c *gin.Context) {
 	var userId = c.Param("userId")
-	var _, err = models.DeleteUser(userId)
+	var _, err = models.AdminModel{}.DeleteUser(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -134,7 +134,7 @@ func DeleteUser(c *gin.Context) {
 func AssignDeviceToUser(c *gin.Context) {
 	var userId = c.Param("userId")
 	var deviceId = c.Param("deviceId")
-	var _, err = models.AssignUserDevice(userId, deviceId)
+	var _, err = models.AdminModel{}.AssignUserDevice(userId, deviceId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -156,7 +156,7 @@ func AssignDeviceToUser(c *gin.Context) {
 func DeassignDeviceToUser(c *gin.Context) {
 	var userId = c.Param("userId")
 	var deviceId = c.Param("deviceId")
-	var _, err = models.DeassignDeviceToUser(userId, deviceId)
+	var _, err = models.AdminModel{}.DeassignDeviceToUser(userId, deviceId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -177,7 +177,7 @@ func DeassignDeviceToUser(c *gin.Context) {
 // @Router       /user/:userId/devices [get]
 func GetUserDevices(c *gin.Context) {
 	var userId = c.Param("userId")
-	var userDevices, err = models.GetUserDevices(userId)
+	var userDevices, err = models.AdminModel{}.GetUserDevices(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return

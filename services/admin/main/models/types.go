@@ -30,3 +30,14 @@ type UserDevice struct {
 	Name              string `json:"name"`
 	Abbr              string `json:"abbr"`
 }
+
+type CreateUserRequest struct {
+	Name string `json:"name"`
+}
+
+type CreateDeviceRequest struct {
+	MAC         string
+	Name        string
+	IP          string
+	Description string
+}

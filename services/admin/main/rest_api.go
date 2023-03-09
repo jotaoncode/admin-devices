@@ -13,6 +13,7 @@ import (
 // @BasePath  /api/v1
 func main() {
 	r := gin.Default()
+	// TODO add to deployment ready check
 	r.GET("/healthy", controllers.IsHealthy)
 	r.GET("/device/:deviceId", controllers.GetDevice)
 	r.GET("/devices", controllers.GetDevices)
