@@ -15,7 +15,7 @@ RUN adduser \
     --uid "$UID" \
     "$USER"
 WORKDIR /app
-COPY main ./src
+COPY main/ ./main
 COPY ./go.mod ./go.sum ./
 RUN go mod download
 
@@ -27,6 +27,6 @@ RUN pwd
 EXPOSE 80
 
 RUN go install github.com/cosmtrek/air@latest
-WORKDIR /app/src
+WORKDIR /app/main
 USER admin
 CMD ["air", "-c", ".air.toml"]
