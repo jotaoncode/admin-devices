@@ -1,0 +1,136 @@
+basePath: /api/v1
+host: localhost:9090
+info:
+  contact: {}
+  description: Administrate devices to users
+  title: Admin devices Example API
+  version: "1.0"
+paths:
+  /device:
+    post:
+      consumes:
+      - application/json
+      description: creates a new device
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Create a device
+      tags:
+      - devices
+  /device/:deviceId:
+    get:
+      consumes:
+      - application/json
+      description: get device by id
+      produces:
+      - application/json
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Gets a device for a given device id
+      tags:
+      - devices
+  /devices:
+    get:
+      consumes:
+      - application/json
+      description: list of devices to administrate
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Gets all the devices
+      tags:
+      - devices
+  /healthy:
+    get:
+      responses:
+        "200":
+          description: OK
+      summary: Is Healthy Service
+  /user:
+    post:
+      consumes:
+      - application/json
+      description: creates a new user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Create a user
+      tags:
+      - users
+  /user/:userId:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a new user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Delete a user
+      tags:
+      - users
+  /user/:userId/device/:deviceId:
+    delete:
+      consumes:
+      - application/json
+      description: Deassign device to a user by id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Deassign device to a user
+      tags:
+      - userdevice
+    post:
+      consumes:
+      - application/json
+      description: Assigns a device to a user, informing in case 3 or more assigned
+        devices to user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Assigns a device to a user
+      tags:
+      - userdevice
+  /user/:userId/devices:
+    get:
+      consumes:
+      - application/json
+      description: a list of devices assigned to the user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Ge user devices
+      tags:
+      - userdevice
+swagger: "2.0"

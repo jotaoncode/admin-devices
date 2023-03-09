@@ -7,7 +7,7 @@ import (
 
 // IsHealthy godoc
 // @Summary      Is Healthy Service
-// @Success      200  {object}  model.Account
+// @Success      200
 // @Router       /healthy [get]
 func IsHealthy(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{

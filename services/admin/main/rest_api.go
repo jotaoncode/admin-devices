@@ -19,9 +19,9 @@ func main() {
 	r.POST("/device", controllers.CreateDevice)
 	r.POST("/user", controllers.CreateUser)
 	r.DELETE("/user/:userId", controllers.DeleteUser)
-	r.PUT("/assign-device/:userId", controllers.AssignDeviceToUser)
-	r.PUT("/deassign/:userId/device/:deviceId", controllers.DeassignDeviceToUser)
-	r.GET("/user-devices/:userId", controllers.GetUserDevices)
+	r.POST("/user/:userId/device/:deviceId", controllers.AssignDeviceToUser)
+	r.DELETE("/user/:userId/device/:deviceId", controllers.DeassignDeviceToUser)
+	r.GET("/user/:userId/devices", controllers.GetUserDevices)
 	// TODO Remove once this is defined only for testing purposes
 	r.POST("/seed", controllers.CreateSeed)
 	r.Run(":80") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")

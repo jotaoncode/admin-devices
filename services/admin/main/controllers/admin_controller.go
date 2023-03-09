@@ -12,9 +12,12 @@ import (
 // @Tags         devices
 // @Accept       json
 // @Produce      json
-// @Param        deviceId   path      string
-// @Success      200  {object}  model.Devices
-// @Failure      500  {object}  http
+// @Produce      json
+// @Success      200
+//
+//	@Failure      500
+//
+// @Router       /device/:deviceId [get]
 func GetDevice(c *gin.Context) {
 	var device, err = models.GetDevice(c.Param("deviceId"))
 	if err != nil {
@@ -34,8 +37,11 @@ func GetDevice(c *gin.Context) {
 // @Tags         devices
 // @Accept       json
 // @Produce      json
-// @Success      200  {object}  []model.Devices
-// @Failure      500  {object}  http
+// @Success      200
+//
+//	@Failure      500
+//
+// @Router       /devices [get]
 func GetDevices(c *gin.Context) {
 	var devices, err = models.GetDevices()
 	if err != nil {
@@ -55,8 +61,11 @@ func GetDevices(c *gin.Context) {
 // @Tags         devices
 // @Accept       json
 // @Produce      json
-// @Success      200  {"deviceId": string}  ID
-// @Failure      500  {object}  http
+// @Success      200
+//
+//	@Failure      500
+//
+// @Router       /device [post]
 func CreateDevice(c *gin.Context) {
 	var device models.Devices
 	c.BindJSON(&device)
@@ -74,8 +83,11 @@ func CreateDevice(c *gin.Context) {
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Success      200  {"userId": string}  ID
-// @Failure      500  {object}  http
+// @Success      200
+//
+//	@Failure      500
+//
+// @Router       /user [post]
 func CreateUser(c *gin.Context) {
 	var user models.Users
 	c.BindJSON(&user)
@@ -92,10 +104,12 @@ func CreateUser(c *gin.Context) {
 // @Description  Delete a new user
 // @Tags         users
 // @Accept       json
-// @Param        userId   path      string
 // @Produce      json
-// @Success      200  {"userId": string}  ID
-// @Failure      500  {object}  http
+// @Success      200
+//
+//	@Failure      500
+//
+// @Router       /user/:userId [delete]
 func DeleteUser(c *gin.Context) {
 	var userId = c.Param("userId")
 	var _, err = models.DeleteUser(userId)
@@ -111,11 +125,12 @@ func DeleteUser(c *gin.Context) {
 // @Description  Assigns a device to a user, informing in case 3 or more assigned devices to user
 // @Tags         userdevice
 // @Accept       json
-// @Param        userId   path      string
-// @Param        deviceId   path      string
 // @Produce      json
-// @Success      200  {"message": string}  ID
-// @Failure      500  {object}  http
+// @Success      200
+//
+//	@Failure      500
+//
+// @Router       /user/:userId/device/:deviceId [post]
 func AssignDeviceToUser(c *gin.Context) {
 	var userId = c.Param("userId")
 	var deviceId = c.Param("deviceId")
@@ -132,11 +147,12 @@ func AssignDeviceToUser(c *gin.Context) {
 // @Description  Deassign device to a user by id
 // @Tags         userdevice
 // @Accept       json
-// @Param        userId   path      string
-// @Param        deviceId   path      string
 // @Produce      json
-// @Success      200  {"message": string}  ID
-// @Failure      500  {object}  http
+// @Success      200
+//
+//	@Failure      500
+//
+// @Router       /user/:userId/device/:deviceId [delete]
 func DeassignDeviceToUser(c *gin.Context) {
 	var userId = c.Param("userId")
 	var deviceId = c.Param("deviceId")
@@ -153,10 +169,12 @@ func DeassignDeviceToUser(c *gin.Context) {
 // @Description  a list of devices assigned to the user
 // @Tags         userdevice
 // @Accept       json
-// @Param        userId   path      string
 // @Produce      json
-// @Success      200  {object}  object
-// @Failure      500  {object}  http
+// @Success      200
+//
+//	@Failure      500
+//
+// @Router       /user/:userId/devices [get]
 func GetUserDevices(c *gin.Context) {
 	var userId = c.Param("userId")
 	var userDevices, err = models.GetUserDevices(userId)
