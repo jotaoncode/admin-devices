@@ -5,6 +5,7 @@ import (
 	"testing"
 )
 
+// TODO Improve using stubs spies and more granular testing
 // Test Assign User Device, it should create a new registry in db
 func TestAssignUserDevice(t *testing.T) {
 	adminModel := &AdminModel{}

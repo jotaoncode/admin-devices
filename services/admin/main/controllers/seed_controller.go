@@ -20,7 +20,7 @@ func CreateSeed(c *gin.Context) {
 		{ID: uuid.New().String(), Name: "unnasigned pro", MAC: "09-B6-5A-85-37-21", Description: "i5 12500"},
 		{ID: uuid.New().String(), Name: "unnasigned air", MAC: "04-B3-5B-85-37-21", Description: "i3 11500"},
 	}
-	connectors.GetDb().Create(devices)
+	connectors.DB{}.GetDb().Create(devices)
 	var assignedUserOnce = uuid.New().String()
 	var assignedUserTwoTimes = uuid.New().String()
 	var users = &[]models.Users{
@@ -30,13 +30,13 @@ func CreateSeed(c *gin.Context) {
 		{ID: uuid.New().String(), Name: "John Doe", Abbr: "JDO"},
 		{ID: uuid.New().String(), Name: "Alejandra Ramirez", Abbr: "ARA"},
 	}
-	connectors.GetDb().Create(users)
+	connectors.DB{}.GetDb().Create(users)
 	var assignations = &[]models.UserDevices{
 		{ID: uuid.New().String(), UserId: assignedUserOnce, DeviceId: assignOnce},
 		{ID: uuid.New().String(), UserId: assignedUserTwoTimes, DeviceId: assignTwoTimes1},
 		{ID: uuid.New().String(), UserId: assignedUserTwoTimes, DeviceId: assignTwoTimes2},
 	}
-	connectors.GetDb().Create(assignations)
+	connectors.DB{}.GetDb().Create(assignations)
 
 	c.JSON(http.StatusOK, gin.H{
 		"assignedUserOnce":     assignedUserOnce,

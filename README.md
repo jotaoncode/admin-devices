@@ -14,7 +14,7 @@ This is the system for device control for the different users of the company Sam
 - The system administrator wants to be able to add a new computer to an employee
 - The system administrator wants to be informed when an employee is assigned 3 or
 more computers
-- The system administrator wants to be able to get all computers OK
+- The system administrator wants to be able to get all computers
 - The system administrator wants to be able to get all assigned computers for an
 employee 
 - The system administrator wants to be able to get the data of a single computer
